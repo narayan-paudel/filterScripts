@@ -18,20 +18,22 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import matplotlib.gridspec as gridspec
 import numpy as np
+from cleani3 import clean_rename
+
+import glob
 
 
-import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument('--input',"-i",nargs="+",type=str,default="",help="input simulation GCD for IceTop")
-parser.add_argument('--output',"-o",type=str,default="../testInput.i3.gz",help='output simulation GCD for IceTop')
-args = parser.parse_args()
-
+file_path = "/data/user/enpaudel/triggerStudy/simFiles/dataSetClean1_6/"
+input_files = sorted(glob.glob(file_path+"*.i3.*"))
 # GCD="/data/user/enpaudel/triggerStudy/simFiles/GeoCalibDetectorStatus_2020.Run135057.Pass2_V0_Snow210305NoDomSetTankTrig.i3.gz"
 GCD="/data/user/enpaudel/triggerStudy/simFiles/GeoCalibDetectorStatus_2020.Run135057.Pass2_V0_Snow210305_W7HGDomsets.i3.gz"
 
+# primary = args.input[0].split("/")[-1][0]
+# example python reconstructIceTopS125.py -i 
+# /home/enpaudel/icecube/triggerStudy/simFiles/dataSetUnique1_6/HeDAT004171GenDetFiltProcUnique.i3.bz2
+# -o /home/enpaudel/icecube/triggerStudy/simFiles/dataSetReco/FeDAT000001GenDetFiltProcUniqueCleanVEMEvts.i3.gz
+
 plotFolder = "/home/enpaudel/icecube/filterReco/plots/"
-output = args.output.split("Gen")[0]+"IceTop7HG.i3.gz"
-print("output",output)
 
 keep_list = ["CleanIceTopRawData","CleanedHLCTankPulses","FilterMask","H4aWeight","tank7_3000","QTriggerHierarchy","QFilterMask"
 "HLC6_5000","I3EventHeader","I3TriggerHierarchy","MCPrimary","OfflineIceTopSLCVEMPulsesCleanTimeCleanCharge","OfflineIceTopSLCTankPulsesCleanTimeCleanCharge",
@@ -39,34 +41,18 @@ keep_list = ["CleanIceTopRawData","CleanedHLCTankPulses","FilterMask","H4aWeight
 "I3SuperDST",
 ]
 
-@icetray.traysegment
-def clean_rename(tray,name=""):
-  tray.AddModule("Keep","keep unusual time",
-               keys = keep_list,
-               # If = haveUnusualTime,
-               )
-  tray.AddModule("Rename","renameFiles",
-               keys = ["OfflineIceTopSLCVEMPulsesCleanTimeCleanCharge","OfflineIceTopSLCVEMPulses",
-               "OfflineIceTopSLCTankPulsesCleanTimeCleanCharge","OfflineIceTopSLCTankPulses",
-               "OfflineIceTopHLCVEMPulsesCleanTimeCleanCharge","OfflineIceTopHLCVEMPulses",
-               "OfflineIceTopHLCTankPulsesCleanTimeCleanCharge","OfflineIceTopHLCTankPulses"],
-               # If = haveUnusualTime,
-               )
+for ifile in file_list:
+  ioutput = ifile.split("/")[-1][0]  
+  # tray = I3Tray()
+  # tray.AddModule("I3Reader","reader",
+  #              filenameList=ifile,
+  #             )
+  # tray.Add(clean_rename)
 
+  # tray.AddModule("I3Writer","i3writer",
+  #             filename=args.output,
+  #             streams=[icetray.I3Frame.DAQ,icetray.I3Frame.Physics],
+  #             )
 
-
-
-tray = I3Tray()
-tray.AddModule("I3Reader","reader",
-             filenameList=args.input,
-            )
-tray.Add(clean_rename)
-
-tray.AddModule("I3Writer","i3writer",
-            filename=output,
-            streams=[icetray.I3Frame.DAQ,icetray.I3Frame.Physics],
-            )
-
-tray.Execute()
-tray.Finish()
-
+  # tray.Execute()
+  # tray.Finish()

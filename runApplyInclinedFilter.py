@@ -12,14 +12,14 @@ ABS_PATH_HERE += "/"
 # print("abs path",ABS_PATH_HERE)
 
 ############################################################################
-inputPath = "/data/sim/IceTop/2023/generated/untriggered/filterStudy/dataSet/"
+inputPath = "/data/sim/IceTop/2023/generated/untriggered/filterStudy/splitted/"
 inputList = sorted(glob.glob(inputPath+"*.i3.gz"))[:]
 #############################################################################
 # print("inputList",inputList)
 
 
 
-submitFileName = ABS_PATH_HERE+"tempSubmitInclSplit.sub"
+submitFileName = ABS_PATH_HERE+"tempSubmitInclFilt.sub"
 
 
 def makeSubFile(fileList):
@@ -28,10 +28,10 @@ def makeSubFile(fileList):
   submitFile.write("## submit description file\n")
   submitFile.write("########################################\n\n")
   submitFile.write("Universe   = vanilla\n")
-  submitFile.write("Executable = /data/user/enpaudel/filterReco/scripts/applySplittingInclined.sh\n")
-  submitFile.write("Log        = /scratch/enpaudel/log/inclSplit$(Process).log\n")
-  submitFile.write("Output     = /data/user/enpaudel/filterReco/log/inclSplit$(Process).out\n")
-  submitFile.write("Error      = /data/user/enpaudel/filterReco/log/inclSplit$(Process).err\n")
+  submitFile.write("Executable = /data/user/enpaudel/filterReco/scripts/applyInclinedFilter.sh\n")
+  submitFile.write("Log        = /scratch/enpaudel/log/inclFilt$(Process).log\n")
+  submitFile.write("Output     = /data/user/enpaudel/filterReco/log/inclFilt$(Process).out\n")
+  submitFile.write("Error      = /data/user/enpaudel/filterReco/log/inclFilt$(Process).err\n")
   submitFile.write("request_cpus = 1\n")
   submitFile.write("request_memory = 2GB\n")
   submitFile.write("request_disk = 1GB\n")
@@ -67,8 +67,8 @@ def submitToCondorFile(fileList):
   # corsikaID = int(''.join(i for i in corsikaID if i.isdigit()))
   # print("file list",*fileList[:2])
   # print("corsika id",corsikaID,primary)
-  subprocess.call(["condor_submit tempSubmitInclSplit.sub -batch-name {0}-{1}".format(primary,runID)], shell=True)
-  subprocess.call(["rm tempSubmitInclSplit.sub"], shell=True)
+  subprocess.call(["condor_submit tempSubmitInclFilt.sub -batch-name {0}--{1}".format(primary,runID)], shell=True)
+  subprocess.call(["rm tempSubmitInclFilt.sub"], shell=True)
 
 def submitToCondor(fileList,chunk):
   fileChunks = [fileList[i:i + chunk] for i in range(0, len(fileList), chunk)]

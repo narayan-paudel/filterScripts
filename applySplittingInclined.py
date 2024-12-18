@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+This script produces p frames from q frame using null split and cluster cleaning.
+"""
+
 from icecube.icetray import I3Tray, I3Units
 from icecube import icetray, dataclasses, dataio
 from icecube import topeventcleaning
@@ -21,7 +25,12 @@ parser.add_argument("-o", "--output", action="store", default=None,
                     dest="OUTPUT", help="Output i3 file", required=True)
 parser.add_argument("-g", "--gcd", action="store", default="/data/user/enpaudel/triggerStudy/simFiles/GeoCalibDetectorStatus_2020.Run135057.Pass2_V0_Snow210305NoSMTDOMSet.i3.gz",
                     dest="GCD", help="GCD file for input i3 file", required=True)
+parser.add_argument("-f","--full_event", dest="FULL_EVENT",default=False, action="store_true", required=False,
+                        help="create a p frame from Q frame")
+
 args = parser.parse_args()
+
+
 
 
 
@@ -32,6 +41,8 @@ tray.AddModule("I3Reader","reader",
              # filenameList = args.input,
              filenameList = [args.GCD]+args.INPUT,
             )
+if args.FULL_EVENT == True:
+  tray.AddModule("I3NullSplitter", "fullevent")
 
 tray.AddModule("I3TopHLCClusterCleaning", name + "_Inclined",
                SubEventStreamName="IceTopSplitIncl",
@@ -69,10 +80,13 @@ class PhysicsCopyTriggers(icetray.I3ConditionalModule):
 tray.AddModule(PhysicsCopyTriggers, name + "_IceTopTrigCopy",
                If=which_split(split_name="IceTopSplitIncl"))
 
+tray.Add("I3OrphanQDropper")
+
 
 tray.AddModule("I3Writer","i3writer",
               filename=args.OUTPUT,
               streams=[icetray.I3Frame.Simulation,icetray.I3Frame.DAQ,icetray.I3Frame.Physics],
+              # DropOrphanStreams=[icetray.I3Frame.DAQ]
               )
 
 tray.Execute()

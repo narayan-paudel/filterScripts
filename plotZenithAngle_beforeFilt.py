@@ -41,8 +41,8 @@ inclinationCut = 45 #degree
 energyCut = 10**16 #eV
 sin2ZenBins = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.822]
 energyBins = 10**np.linspace(6, 8.0, 21)
-# fileDir = "/data/sim/IceTop/2023/generated/untriggered/testFile/splitCheck_afterFilter/"
-fileDir = "/data/sim/IceTop/2023/generated/untriggered/dataSetClean_afterFilt/"
+
+fileDir = "/home/enpaudel/icecube/triggerStudy/simFiles/dataSetClean1_6/"
 
 # outputDir = "/data/sim/IceTop/2023/generated/untriggered/testFile/splitCheck_afterSplit/"
 
@@ -51,7 +51,7 @@ GCD = "/data/user/enpaudel/triggerStudy/simFiles/GeoCalibDetectorStatus_2020.Run
 # plotSuffix = "Only7HG"
 plotSuffix = ""
 # fileList = sorted(glob.glob(fileDir+"FeDAT000*.i3.*"))[:1]
-fileList = sorted(glob.glob(fileDir+"FeDAT*.i3.*"))
+fileList = sorted(glob.glob(fileDir+"Fe*DAT*.i3.*"))
 # fileList = ["/home/enpaudel/icecube/triggerStudy/simFiles/dataSetClean1_6/FeDAT000001GenDetFiltProcUniqueCleanVEMEvts.i3.gz"]
 
 def openingAngle(theta1,phi1,theta2,phi2):
@@ -81,66 +81,66 @@ class zenithCheck(icetray.I3Module):
     # if int(frame["I3EventHeader"].event_id) == int(8351):
     xcore = frame["MCPrimary"].pos.x
     ycore = frame["MCPrimary"].pos.y
-    xcore_reco = frame["ShowerCOG"].pos.x
-    ycore_reco = frame["ShowerCOG"].pos.y
-    r_diff = np.sqrt((xcore-xcore_reco)**2+(ycore-ycore_reco)**2)/I3Units.m
+    # xcore_reco = frame["ShowerCOG"].pos.x
+    # ycore_reco = frame["ShowerCOG"].pos.y
+    # r_diff = np.sqrt((xcore-xcore_reco)**2+(ycore-ycore_reco)**2)/I3Units.m
     # print("cores",(xcore,ycore),(xcore_reco,ycore_reco),(xcore-xcore_reco,ycore-ycore_reco),r_diff)
     zenith_true = frame["MCPrimary"].dir.zenith
     azimuth_true = frame["MCPrimary"].dir.azimuth
-    zenith_reco = frame["ShowerPlane"].dir.zenith
-    azimuth_reco = frame["ShowerPlane"].dir.azimuth
-    openAngle = openingAngle(zenith_true,azimuth_true,zenith_reco,azimuth_reco)
+    # zenith_reco = frame["ShowerPlane"].dir.zenith
+    # azimuth_reco = frame["ShowerPlane"].dir.azimuth
+    # openAngle = openingAngle(zenith_true,azimuth_true,zenith_reco,azimuth_reco)
     # print("zenith True",zenith_reco,zenith_true,np.arcsin(np.sqrt(self.zenithBin[0])),np.arcsin(np.sqrt(self.zenithBin[1])))
     # if np.arcsin(np.sqrt(self.zenithBin[0])) <= zenith_true < np.arcsin(np.sqrt(self.zenithBin[1])) and not np.isnan(openAngle):
-    self.openingAngleList.append(openAngle*I3Units.radian/I3Units.degree)
-    self.r_diffList.append(r_diff)
+    # self.openingAngleList.append(openAngle*I3Units.radian/I3Units.degree)
+    # self.r_diffList.append(r_diff)
     self.zenithTrueList.append(zenith_true*I3Units.radian/I3Units.degree)
-    self.zenithRecoList.append(zenith_reco*I3Units.radian/I3Units.degree)
+    # self.zenithRecoList.append(zenith_reco*I3Units.radian/I3Units.degree)
 
   def Finish(self):
-    self.fig = plt.figure(figsize=(8,5))
-    gs = gridspec.GridSpec(nrows=1,ncols=1)
-    self.ax = self.fig.add_subplot(gs[0])
-    # print(self.zenithDiff,min(self.zenithDiff),max(self.zenithDiff))
-    # bins = np.linspace(min(self.zenithDiff),max(self.zenithDiff),80)
-    # self.ax.hist(self.zenithDiff,bins=bins,histtype="step")
-    # bins = np.linspace(min(self.openingAngleList),max(self.openingAngleList),80)
-    self.openingAngleList = [ielt for ielt in self.openingAngleList if not np.isnan(ielt)]
-    bins = np.linspace(-1,100,102)
-    # print(self.openingAngleList,min(self.openingAngleList),max(self.openingAngleList))
-    p68 = np.percentile(self.openingAngleList,68)
-    print(p68)
-    self.ax.hist(self.openingAngleList,bins=bins,histtype="step",label=r"",lw=2.5)
-    self.ax.axvline(p68,ymin=0,ymax=1,color="orange",ls="--",lw=2.5,label=r"p$_{{{:.0f}}}$={:.1f}$^{{\circ}}$".format(68,p68))
-    self.ax.tick_params(axis='both',which='both', direction='in', labelsize=22)
-    self.ax.set_xlabel(r"$\psi$ [$^{\circ}$]", fontsize=22)
-    self.ax.set_ylabel("count", fontsize=22)
-    self.ax.set_xlim(0,100)
-    self.ax.set_ylim(0.9,5*10**4)
-    self.ax.set_yscale("log")
-    self.ax.legend(fontsize=18)
-    plt.savefig(plotFolder+"/openAngleAfterFilter"+plotSuffix+".png",transparent=False,bbox_inches='tight')
-    plt.savefig(plotFolder+"/openAngleAfterFilter"+plotSuffix+".pdf",transparent=False,bbox_inches='tight')
-    plt.close()
+    # self.fig = plt.figure(figsize=(8,5))
+    # gs = gridspec.GridSpec(nrows=1,ncols=1)
+    # self.ax = self.fig.add_subplot(gs[0])
+    # # print(self.zenithDiff,min(self.zenithDiff),max(self.zenithDiff))
+    # # bins = np.linspace(min(self.zenithDiff),max(self.zenithDiff),80)
+    # # self.ax.hist(self.zenithDiff,bins=bins,histtype="step")
+    # # bins = np.linspace(min(self.openingAngleList),max(self.openingAngleList),80)
+    # self.openingAngleList = [ielt for ielt in self.openingAngleList if not np.isnan(ielt)]
+    # bins = np.linspace(-1,100,102)
+    # # print(self.openingAngleList,min(self.openingAngleList),max(self.openingAngleList))
+    # p68 = np.percentile(self.openingAngleList,68)
+    # print(p68)
+    # self.ax.hist(self.openingAngleList,bins=bins,histtype="step",label=r"",lw=2.5)
+    # self.ax.axvline(p68,ymin=0,ymax=1,color="orange",ls="--",lw=2.5,label=r"p$_{{{:.0f}}}$={:.1f}$^{{\circ}}$".format(68,p68))
+    # self.ax.tick_params(axis='both',which='both', direction='in', labelsize=22)
+    # self.ax.set_xlabel(r"$\psi$ [$^{\circ}$]", fontsize=22)
+    # self.ax.set_ylabel("count", fontsize=22)
+    # self.ax.set_xlim(0,100)
+    # self.ax.set_ylim(0.9,5*10**3)
+    # self.ax.set_yscale("log")
+    # self.ax.legend(fontsize=18)
+    # plt.savefig(plotFolder+"/openAngleAfterFilter"+plotSuffix+".png",transparent=False,bbox_inches='tight')
+    # plt.savefig(plotFolder+"/openAngleAfterFilter"+plotSuffix+".pdf",transparent=False,bbox_inches='tight')
+    # plt.close()
     #####################################################
     #####################################################
-    self.fig = plt.figure(figsize=(8,5))
-    gs = gridspec.GridSpec(nrows=1,ncols=1)
-    self.ax = self.fig.add_subplot(gs[0])
-    p68 = np.percentile(self.r_diffList,68)
-    print(p68)
-    bins = np.linspace(-1,2000,2002)
-    # self.ax.hist(self.r_diffList,histtype="step",label=r"",lw=2.5)
-    self.ax.hist(self.r_diffList,bins=bins,histtype="step",label=r"",lw=2.5)
-    self.ax.axvline(p68,ymin=0,ymax=1,color="orange",ls="--",lw=2.5,label=r"p$_{{{:.0f}}}$={:.1f}".format(68,p68))
-    self.ax.tick_params(axis='both',which='both', direction='in', labelsize=22)
-    self.ax.set_xlabel(r"abs(r$_{true}$-r$_{reco}$) [m]", fontsize=22)
-    self.ax.set_ylabel("count", fontsize=22)
-    self.ax.set_yscale("log")
-    self.ax.legend()
-    plt.savefig(plotFolder+"/coreDiffAfterFilter"+plotSuffix+".png",transparent=False,bbox_inches='tight')
-    plt.savefig(plotFolder+"/coreDiffAfterFilter"+plotSuffix+".pdf",transparent=False,bbox_inches='tight')
-    plt.close()
+    # self.fig = plt.figure(figsize=(8,5))
+    # gs = gridspec.GridSpec(nrows=1,ncols=1)
+    # self.ax = self.fig.add_subplot(gs[0])
+    # p68 = np.percentile(self.r_diffList,68)
+    # print(p68)
+    # bins = np.linspace(-1,2000,2002)
+    # # self.ax.hist(self.r_diffList,histtype="step",label=r"",lw=2.5)
+    # self.ax.hist(self.r_diffList,bins=bins,histtype="step",label=r"",lw=2.5)
+    # self.ax.axvline(p68,ymin=0,ymax=1,color="orange",ls="--",lw=2.5,label=r"p$_{{{:.0f}}}$={:.1f}".format(68,p68))
+    # self.ax.tick_params(axis='both',which='both', direction='in', labelsize=22)
+    # self.ax.set_xlabel(r"abs(r$_{true}$-r$_{reco}$) [m]", fontsize=22)
+    # self.ax.set_ylabel("count", fontsize=22)
+    # self.ax.set_yscale("log")
+    # self.ax.legend()
+    # plt.savefig(plotFolder+"/coreDiffAfterFilter"+plotSuffix+".png",transparent=False,bbox_inches='tight')
+    # plt.savefig(plotFolder+"/coreDiffAfterFilter"+plotSuffix+".pdf",transparent=False,bbox_inches='tight')
+    # plt.close()
     #######################################################
     #######################################################
     self.fig = plt.figure(figsize=(8,5))
@@ -164,8 +164,8 @@ class zenithCheck(icetray.I3Module):
     self.ax.set_ylim(0.9,5*10**3)
     self.ax.set_yscale("log")
     self.ax.legend(fontsize=18)
-    plt.savefig(plotFolder+"/zenithAfterFilter"+plotSuffix+".png",transparent=False,bbox_inches='tight')
-    plt.savefig(plotFolder+"/zenithAfterFilter"+plotSuffix+".pdf",transparent=False,bbox_inches='tight')
+    plt.savefig(plotFolder+"/zenithBeforeFilter"+plotSuffix+".png",transparent=False,bbox_inches='tight')
+    plt.savefig(plotFolder+"/zenithBeforeFilter"+plotSuffix+".pdf",transparent=False,bbox_inches='tight')
     plt.close()
 
 
@@ -182,9 +182,9 @@ tray.AddModule("I3Reader","reader",
              # filename = inFile,
             )
 
-tray.AddModule(test7HG,"7HG",
-              streams=[icetray.I3Frame.DAQ,icetray.I3Frame.Physics],
-              )
+# tray.AddModule(test7HG,"7HG",
+#               streams=[icetray.I3Frame.DAQ,icetray.I3Frame.Physics],
+#               )
 
 # tray.AddModule(excludeITSMT,"notITSMT",
 #               streams=[icetray.I3Frame.DAQ,icetray.I3Frame.Physics],
